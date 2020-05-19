@@ -11,6 +11,7 @@ from tornado.ioloop import IOLoop
 from tornado.log import access_log
 # noinspection PyUnresolvedReferences
 from tornado.web import Application, RequestHandler
+import tornado.httpserver
 
 from openmaptiles.pgutils import show_settings, get_postgis_version, PgWarnings, \
     get_vector_layers
@@ -287,7 +288,12 @@ class Postserve:
             ),
         ])
 
-        application.listen(self.port)
-        print(f"Postserve started, listening on 0.0.0.0:{self.port}")
-        print(f"Use {self.url} as the data source")
-        IOLoop.instance().start()
+#         application.listen(self.port)
+#         print(f"Postserve started, listening on 0.0.0.0:{self.port}")
+#         print(f"Use {self.url} as the data source")
+#         IOLoop.instance().start()
+        server = tornado.httpserver.HTTPServer(application)
+        server.bind(self.port)
+        #server.start(tornado.process.cpu_count())
+        server.start(4)
+        IOLoop.current().start()
